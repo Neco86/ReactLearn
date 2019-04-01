@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React学习总结 3/31</title>
+<style type="text/css">
+.green {
+    color: green;
+}
+.red {
+    color: red;
+}
+.blue {
+    color: blue;
+}
+a {
+    color: black;
+/*     text-decoration: none;
+    border: 1px solid black; */
+}
+.delete {
+    text-decoration: line-through;
+}
+xmp {
+        background-color: #ccc;
+        border-radius: 10px;
+        width: 500px;
+    }
+.content{
+    width: 500px;
+    margin: 0 auto;
+}
+</style>
+</head>
+<body>
+<div class="content">
+<h1>React学习总结</h1>
+<h2>目录</h2>
+<ol>
+    <li><a href="#环境搭建">环境搭建</a></li>
+    <li><a href="#项目启动">项目启动</a></li>
+    <li><a href="#目录结构">目录结构</a></li>
+    <li><a href="#示例代码">示例代码</a></li>
+    <li><a href="#解决方案及优化">解决方案及优化</a></li>
+    <li><a href="#知识点">知识点</a></li>
+    <li><a href="#注意事项">注意事项</a></li>
+</ol>
+<div id="环境搭建">
+    <h3>一、环境搭建</h3>
+    <h4>1.React基础开发环境</h4>
+    <xmp>
+        npx create-react-app my-app
+    </xmp>
+    <h4>2.Chrome扩展程序</h4> 
+    <xmp>
+        React Developer Tools
+        Redux DevTools
+    </xmp>
+    <h4>3.antd设计模块</h4>
+    <xmp>
+        yarn add antd
+    </xmp>
+    <h4>4.Redux数据框架:通过store存储数据</h4>
+    <xmp>
+        yarn add redux
+    </xmp>
+    <h4>5.Redux-thunk中间件:异步获取数据</h4>
+    <xmp>
+        yarn add redux-thunk
+    </xmp>
+    <h4>6.Redux-sagas中间件:异步获取数据</h4>
+    <xmp>
+        yarn add redux-saga
+    </xmp>
+    <h4>7.React-Redux:把数据及方法放通过connect连接store</h4>
+    <xmp>
+        yarn add react-redux
+    </xmp>
+    <h4>8.styled-Components:编辑组件样式</h4>
+    <xmp>
+        yarn add styled-components
+    </xmp>
+    <h4>9.Immutable.js:使数据不可变,确保state的不可变</h4>
+    <xmp>
+        yarn add immutable
+    </xmp>
+    <h4>10.Router:路由,根据url不同,显示不同内容</h4>
+    <xmp>
+        yarn add react-router-dom
+    </xmp>
+    <h4>11.react-loadable:异步动态导入组件,防止首页打开过慢</h4>
+    <xmp>
+        yarn add react-loadable
+    </xmp>
+    <h4>12.react-transition-group:动画效果</h4>
+    <xmp>
+        yarn add react-transition-group
+    </xmp>
+</div>
+<div id="项目启动">
+    <h3>二、项目启动</h3>
+    <h4>1.React启动</h4>
+    <xmp>
+        yarn start
+        默认为http://localhost:3000
+    </xmp>
+    <h4>2.React项目打包上线</h4>
+    <xmp>
+        删掉本地src/api目录
+        yarn build
+        打包后生成build文件夹即为上线文件
+    </xmp>
+    <h4>3.php服务器:XAMPP</h4>
+    <xmp>
+        开启服务器
+            /opt/lampp/lampp start
+        停止服务器
+            /opt/lampp/lampp stop 
+        图形化服务器管理界面
+            /opt/lampp/manager-linux-x64.run
+        localhost对应/opt/lampp/htdocs
+    </xmp>
+    <h4>4.ngrok内网穿透</h4>
+    <xmp>
+        ifconfig查看ip地址
+            inet xxx.xxx.xxx.xxx
+        ./ngrok -config=ngrok.cfg -subdomain xxx.xxx.xxx.xxx
+    </xmp> 
+</div>
+<div id="目录结构">
+    <h3>三、目录结构</h3>
+    <pre>
+    <span class="green">Green:手动添加目录及文件</span>
+    <span class="delete">Delete:暂时不使用文件</span>
+
+    README.md               项目说明文件
+    package.json            Node包文件:项目名称,版本,第三方依赖,指令等
+    yarn.lock               锁定了包版本，避免包版本不同产生的问题
+    .gitignore              git上传忽略文件
+    node_modules/           项目依赖第三方的包
+    public/
+        favicon.ico         网页标签图标
+        index.html          主页模板 <sapn class="red">被挂载点id="root",可以设置网站标题等</sapn>
+        <span class="delete">manifest.json       PWA快捷方式的图标名称等</span>
+        <span class="green">api/</span>                模拟数据
+            <span class="green"><a href="#json">xxx.json</a></span>
+    src/                    项目所有源代码      
+        index.js            整个程序的入口文件(all in js) <span class="red">把App挂载到root</span>
+        <span class="delete">serviceWoker.js     serviceWorker借助网页写手机App,断网时,会从缓存中看到内容</span>  
+                            <span class="delete">PWA progressive web application</span>
+        <a href="#App">App.js</a>              组件文件 <span class="red">export App,引入reset.iconfont.store.router</span>
+        <span class="delete">App.test.js         自动测试文件</span>
+        <span class="delete">App.css             使用styled-components,删除,使用style.js替代</span>
+        <span class="green"><a href="#commonStyle">style.js</a>            全局样式,即reset.css
+        store/              store
+            <a href="#storeIndex">index.js</a>        中间件及redux调试工具设置
+            <a href="#storeReducer">reducer.js</a>      总reducer,combineReducers
+            <a href="#sagas">sagas.js</a>        异步获取文件
+        statics/            静态文件
+            logo.png        网站Logo
+            /iconfont       iconfont
+                <a href="#iconfont">iconfont.js</a> 原iconfont.css文件修改后的文件
+        pages/              各个页面
+            xxx/            某一页面
+                components/ 页面组件
+                    xxx.js  组件,与../index.js类似
+                store/      分store
+                    <a href="#xStoreIndex">index.js</a>        导出store文件
+                    <a href="#xStoreReducer">reducer.js</a>      处理
+                    <a href="#xStoreActionCreators">actionCreators</a>  
+                    <a href="#xStorActionTypes">actionTypes</a>
+                <a href="#index">index.js </a>   页面主要内容,使用组件
+                <a href="#style">style.js</a>    页面及组件的渲染
+        common/             公共组件内容,目录结构与pages类似
+        </span>
+    </pre>
+</div>
+<div id="示例代码">
+    <h3>四、示例代码</h3>
+    public/api/xxx.json 模拟json数据
+    <xmp id='json'>
+        {    
+            "success":true,
+            "data":{}
+        }
+    </xmp>
+    src/style.js 全局样式
+    <xmp id='commonStyle'>
+        import { createGlobalStyle } from 'styled-components'
+        export const GlobalStyle =createGlobalStyle`
+        //reset.css的内容
+        `
+    </xmp>
+    src/App.js 
+    <xmp id='App'>
+        import React, { Component } from 'react';
+        import store from './store'
+        import { Provider } from 'react-redux'
+        import { BrowserRouter,Route } from 'react-router-dom'
+        import { GlobalStyle } from './style.js'
+        import { GlobalIconStyle } from './statics/iconfont/iconfont.js'
+        import Cxxx from './common/cxxx'
+        import Pxxx from './pages/pxxx'
+
+        class App extends Component {
+          render() {
+            return (
+             <Provider store={store}>
+                <GlobalStyle/>
+                <GlobalIconStyle/>
+                <BrowserRouter>
+                    <Cxxx/>
+                    <Route path='/pxxx/:id' exact component={Pxxx}></Route>
+                </BrowserRouter>
+            </Provider>
+            )
+          }
+        }
+
+        export default App;
+    </xmp>
+    src/store/index.js
+    <xmp id="storeIndex">
+        import { createStore, applyMiddleware, compose } from 'redux';
+        import createSagaMiddleware from 'redux-saga'
+        import mySaga from './sagas'
+        import reducer from './reducer'
+
+        const sagaMiddleware = createSagaMiddleware()
+        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+        const store = createStore(reducer, composeEnhancers(
+            applyMiddleware(sagaMiddleware)
+          ));
+        sagaMiddleware.run(mySaga)
+        export default store
+    </xmp>
+    src/store/reducer.js
+    <xmp id='storeReducer'>
+        import { combineReducers }  from 'redux-immutable'
+        import { reducer as xxxxReducer } from '../pages(common)/xxxx/store'
+
+        const reducer = combineReducers({
+            xxxx:xxxxReducer,
+        })
+
+        export default reducer
+    </xmp>
+    src/store/sagas.js
+    <xmp id="sagas">
+        import {  put,takeEvery } from 'redux-saga/effects'
+        import axios from 'axios'
+        import { actionTypes as xxxxActionTypes,actionCreators as xxxxActionCreators }   from '../pages(common)/xxxx/store'
+
+        function* getXxx() {
+          try {
+              const res=yield axios.get('/api/xxx.json');
+              const data=res.data
+              const action=xxxxActionCreators.xxxAction(data.data)
+              yield put(action)
+          }catch(e){
+              console.log('json请求失败');
+          }
+        }
+        function* mySaga() {
+          yield takeEvery(xxxxActionTypes.XXX_XXX_XXX, getXxx);
+        }
+
+
+        export default mySaga;
+    </xmp>
+    src/statics/iconfont.js
+    <xmp id='iconfont'>
+        import { createGlobalStyle } from 'styled-components'
+        export const GlobalIconStyle =createGlobalStyle`
+        //iconfonr.css内容,记得把url修改到正确目录
+        `
+    </xmp>
+    src/pages(common)/xxxx/index.js
+    <xmp id='index'>
+         import React,{ PureComponent } from 'react'
+         import { connect } from 'react-redux'
+         import { actionCreators }   from './store'
+         import { Xxxx } from './style'
+         import Xxxx from './components/Xxxx'
+         class Xxxx extends PureComponent{
+            render(){
+                const { xxxx } =this.props
+                     return(
+                        <Xxxx>xxx</Xxxx>
+                    )
+               
+            }
+         }
+        const mapDispatchToProps=(dispatch)=>{
+            return {
+                fun(){
+                    dispatch(actionCreators.xxx())
+                }
+            }
+        }
+        const mapStateToProps=(state)=>{
+            return {
+                xxx:state.getIn(['xxx','xxx'])
+            }
+            }
+        export default connect(mapStateToProps,mapDispatchToProps)(Xxxx);
+    </xmp>
+    src/pages(common)/xxxx/style.js
+    <xmp id='style'>
+        import styled from 'styled-components'
+        export const Xxxx = styled.div`
+            //css
+        `
+    </xmp>
+    src/pages(common)/xxxx/store/index.js
+    <xmp id='xStoreIndex'>
+        import reducer from './reducer'
+        import * as actionCreators from './actionCreators'
+        import * as actionTypes from './actionTypes.js'
+        export { reducer,actionCreators,actionTypes }
+    </xmp>
+    src/pages(common)/xxxx/store/reducer.js
+    <xmp id='xStoreReducer'>
+        import * as actionTypes from './actionTypes'
+        const { fromJS } = require('immutable')
+        const defaultState=fromJS({
+                
+                })
+        const changeHomeData = (state,action) => {
+            return state.merge({
+                        topicList:action.topicList,
+                        articleList:action.articleList
+                    })
+        }
+        export default (state=defaultState,action)=>{
+            switch (action.type){
+                case actionTypes.XXXX:
+                    return state.set('xxx',xxx)
+                    return changeHomeData(state,action)
+                    return state.merge({title:action.title,'content':action.content})
+                default: 
+                    return state
+            }
+        }
+    </xmp>
+    src/pages(common)/xxxx/store/actionCreators.js
+    <xmp id='xStoreActionCreators'>
+        import * as actionTypes from './actionTypes'
+        const { fromJS } = require('immutable')
+
+        export const detailText = (data)=>({
+            type:actionTypes.DETAIL_TEXT,
+            title:fromJS(data.title)//ajax获取的异步数据改为Immutable对象
+        })
+    </xmp>
+    src/pages(common)/xxxx/store/actionTypes.js
+    <xmp id='xStorActionTypes'>
+        export const DETAIL_TEXT='detail/detail_text'
+    </xmp>
+</div>
+<div id="解决方案及优化">
+    <h3>五、解决方案及优化</h3>
+    <h4>1.render最外层只能返回一个</h4>
+    <xmp>
+        import { Fragment } from 'react';
+        <Fragment></Fragment>
+    </xmp>
+    <h4>2.循环遍历</h4>
+    <xmp>
+        {list.map((item,index) => {return <li>{item}</li>})}
+    </xmp>
+    <h4>3.重名问题,key绑定问题,插入html元素问题</h4>
+    <xmp>
+        样式中的<span class="delete">class</span>会与类重名,用className代替
+        样式中的<span class="delete">id</span>会与循环for重名,用htmlFor代替
+
+        key绑定map的最外层
+
+        <Xxxx dangerouslySetInnerHTML={{__html:item}}></Xxxx>
+    </xmp>
+    <h4>4.获取dom元素值</h4>
+    <xmp>
+        使用e.target或
+        ref={(value)=>{this.input=value}}
+    </xmp>
+    <h4>5.生命周期函数使用</h4>
+    <xmp>
+        componentDidMount()用于初始ajax获取,全局事件监听
+        shouldComponentUpdate()代码优化,判断数据修改时,当前页面是否应该更新(可以使用PureComponent)
+        componentWillUnmount()取消全局事件监听
+    </xmp>
+    <h4>6.动画问题</h4>
+    <xmp>
+        使用CSS3的transition
+        @keyframes和animation
+        react-transition-group
+        通过判断state来添加或删除class
+    </xmp>
+    <h4>7.无状态组件</h4>
+    <xmp>
+        const TodoListUI = (props)=>{
+        return (//原来render的返回值)}
+    </xmp>
+    <h4>8.Immutable数据获取及修改</h4>
+    <xmp>
+        return state.set('focus',true)
+        return state.merge({list:action.data,'totalPage':action.totalPage})
+        return state.set('articleList',state.get('articleList').concat(action.data))
+
+        focus:state.header.get('focus')
+        focus:state.getIn(['header','focus'])
+    </xmp>
+    <h4>9.组件与样式传参</h4>
+    <xmp>
+        styled components传参
+        在组件里传参
+        <RecommendItem imgUrl="xxx"/>    
+        样式里接收参数
+        export cosnt RecommendItem = styled.div`
+            backgroung:url(${(props)=>props.imgUrl})
+        `
+    </xmp>
+    <h4>10.路由跳转</h4>
+    <xmp>
+        import { Link } from 'react-router-dom'
+        Link key={index} to='/detail'
+        注意使用Link的组件应该在App.js:BrowserRouter里
+    </xmp>
+    <h4>11.路由传参</h4>
+    2种方式
+    <xmp>
+        原文件
+        <Link key={index} to='/detail'>
+         <Route path='/detail' exact component={Detail}></Route>不会匹配 /detail/id
+    </xmp>
+    <xmp>
+        1.动态路由
+        <Link key={index} to={'/detail/' + item.get('id')}>
+        <Route path='/detail/:id' exact component={Detail}></Route>
+        获取传来的id
+        this.props.match.params.id
+    </xmp>   
+    <xmp>
+        2.
+        <Link key={index} to={'/detail?id=' + item.get('id')}>
+        <Route path='/detail' exact component={Detail}></Route>
+        获取传来的id
+        this.props.location.search //获取的值为:"?id=x"//需要处理字符串
+    </xmp>
+    <h4>12.鉴权</h4>
+    <xmp>
+        根据state的值判断应不应该render
+        import { Redirect } from 'react-router-dom'
+        return <Redirect to='/'/>
+    </xmp>
+    <h4>13.异步组件</h4>
+    使用第三方模块:react-loadable
+    <xmp>
+        import Loadable from 'react-loadable';
+        import React from 'react'//需要使用JSX语法
+
+        const LoadableComponent = Loadable({
+          loader: () => import('./'),//./index.js
+          loading(){
+            return <div>正在加载</div>//加载页面时替代内容
+          }
+        });
+        export default ()=><LoadableComponent/>
+    </xmp>
+    <xmp>
+        修改App.js的路由
+        import Detail from './pages/detail'
+        改为
+        import Detail from './pages/detail/loadable.js'
+        此时报错:无法获得动态路由的id
+        使用withRouter 修复
+        import { withRouter } from 'react-router-dom'
+        export default connect(mapStateToProps,mapDispatchToProps)(Detail);
+        改为
+        export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Detail));
+    </xmp>
+</div>
+<div id="知识点">
+    <h3>六、知识点</h3>
+      JSX语法 组件化 ES6(展开运算符,箭头函数,map遍历) 生命周期函数 npm webpack mock git 以及各种模块
+</div>
+<div id="注意事项">
+    <h3>七、注意事项</h3>
+    <pre>
+    React最低支持IE8
+    使用JSX需要import React from 'react'
+    自定义组件首字母必须大写,即大写的都为组件
+    redux构造属性方法
+    <xmp>
+        constructor(props) {
+            super(props);
+            this.state = {//组件的状态
+                inputValue: '',
+                list: []
+            }
+        }
+    </xmp>
+    不使用react-redux记得函数要bind(this),可以放到constructor里
+    list:[...this.state.list,] 展开运算符
+    JSX注释{/*这是注释*/}
+    </pre>
+</div>
+</div>
+</body>
+</html>

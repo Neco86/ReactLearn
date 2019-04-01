@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>简书Log</title>
+<style type="text/css">
+    xmp {
+        background-color: #ccc;
+        border-radius: 10px;
+        width: 500px;
+    }
+    .delete {
+        text-decoration: line-through;
+    }
+</style>
+<base target="_blank" />
+</head>
+<body>
+<pre>
+<h2>简书学习笔记</h2>
+<h3>7-1 项目目录搭建,styled-Components与Reset.css的结合使用</h3>
+    yarn add styled-components
+    这样就不引入css了,引入js
+    <xmp>
+        style.js全局样式
+        import { createGlobalStyle } from 'styled-components'
+        const GlobalStyle =createGlobalStyle`
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        `;
+        引入reset.css样式
+    </xmp>
+<h3>7-2/7-3 使用styled-components完成header组件布局</h3>
+    <xmp>
+        使用局部样式
+        src/common/header/index.js
+        import styled from 'styled-components'
+        export const HeaderWrapper=styled.div`
+            width: 100%;
+        `
+    </xmp>
+    background的url无法使用../
+    import logPic from '../../statics/logo.png'
+    background: url(${logPic});
+
+    Item=组件中有class的
+    export const Item=styled.div`
+    &.class {
+        
+        }   
+    `
+     Item=组件下的class
+    export const Item=styled.div`
+    .class {
+        
+        }   
+    `
+
+    属性值
+    export const Logo=styled.a.attrs({ href:'/'})``
+
+    属性样式
+    &::placeholder{
+        
+    }
+<h3>7-4 使用iconfont嵌入头部布局</h3>
+    把下载的iconfont.css改为iconfont.js
+<h3>7-5 搜索框动画效果实现</h3>
+    className={this.state.focus?'focused':''}
+    使用react-transition-group
+<h3>7-6 使用React-Redux进行数据管理</h3>
+    ...
+<h3>7-7 使用combineReduer完成对数据的拆分管理</h3>
+    把reducer拆分管理
+    创建src/common/header/store/reducer.js
+    修改src/store/reducer.js
+    import { combineReducers }  from 'redux'
+    import headerReducer from '../common/header/store/reducer'
+
+    const reducer = combineReducers({
+        header:headerReducer
+    })
+
+    export default reducer
+    取数据部分修改
+    const mapStateToProps=(state)=>{
+        return {
+            focus:state.header.focus
+        }
+    }
+<h3>7-8 actionCreators与constants的拆分</h3>
+    constants即actionTypes
+    把actionCreator和actionTypes引入index.js,再引入
+    这样就使用一个统一的出口了
+<h3>7-9 使用Immutable.js来管理数据</h3>
+    Immutable.js(不可改变的)
+    生成Immutable对象
+    这样在reduer里就改变不了state,防止出错
+    yarn add immutable
+    在reducer里使用
+    <xmp>
+        import * as actionTypes from './actionTypes'
+        const { fromJS } = require('immutable')
+        const defaultState=fromJS({
+                    focus:false
+                })
+
+        export default (state=defaultState,action)=>{
+            if (action.type===actionTypes.HANDLE_INPUT_FOUCUS){
+                return state.set('focus',true)
+                //Immutable对象的set方法会结合之前Immutable对象之前的值和设置的值,返回一个全新的对象
+            }
+            if (action.type===actionTypes.HANDLE_INPUT_BLUR){    
+                return state.set('focus',false)
+            }
+            return state
+        }
+    </xmp>
+    修改index.js
+    const mapStateToProps=(state)=>{
+        return {
+            focus:state.header.get('focus')
+        }
+    }
+    通过set,get方法处理state
+<h3>7-10 使用redux-immutable统一数据格式</h3>
+    state.header.get('focus')//state是js对象,而state.header为Immutable对象,不统一
+    安装 yarn add redux-immutable
+    把import { combineReducers }  from 'redux'修改为
+    import { combineReducers }  from 'redux-immutable'
+    这样就统一了,最后修改index.js
+    focus:state.get('header').get('focus')或
+    focus:state.getIn(['header','focus'])
+<h3>7-11 热门搜索样式布局</h3>
+    注意:React最低支持IE8
+<h3>7-12 Ajax获取推荐数据</h3>
+    export const initListAction = (data)=>({
+        type:actionTypes.GET_INIT_LIST,
+        data:fromJS(data)
+    })
+    记得把data改成Immutable
+<h3>7-13 代码优化微调</h3>
+    ...
+<h3>7-14 热门搜索页功能实现</h3>
+    export const initListAction = (data)=>({
+        type:actionTypes.GET_INIT_LIST,
+        data:fromJS(data),
+        totalPage:Math.ceil(data.length/10)
+    })
+    const jsList = list.toJS();//把Immutable对象换成JS对象
+
+    return state.set('list',action.data).set('totalPage',action.totalPage)或
+    return state.merge({list:action.data,'totalPage':action.totalPage})
+    return state.set('articleList',state.get('articleList').concat(action.data))
+<h3>7-15 换页旋转动画效果的实现</h3>
+    使用ref获取dom节点
+<h3>7-16 避免无意义的请求发送,提升组件性能</h3>
+    ...
+<h3>8-1 什么是路由,如何在React中使用路由</h3>
+    路由:根据url不同,显示不同内容
+    安装
+    <xmp>
+        yarn add react-router-dom
+    </xmp>
+    <xmp>
+        App.js
+        import { BrowserRouter,Route } from 'react-router-dom'
+        <BrowserRouter>
+            <Route path='/' exact  component={Home}></Route>
+            <Route path='/detail' exact component={Detail}></Route>
+        </BrowserRouter>
+    </xmp>
+<h3>8-2 首页组件拆分</h3>
+    创建src/pages/detail
+                    index.js
+    创建src/pages/home  
+                    index.js
+                    style.js
+                    components/          
+<h3>8-3 首页专题区域布局及reducer的设计</h3>
+    记得数据是Immutable对象,记得用get,getIn方法
+<h3>8-4 首页文章列表制作</h3>
+    ...
+<h3>8-5 首页推荐部分代码编写</h3>
+    <xmp>
+        styled components传参
+        在组件里传参
+        <RecommendItem imgUrl="xxx"/>    
+        样式里接收参数
+        export cosnt RecommendItem = styled.div`
+            backgroung:url(${(props)=>props.imgUrl})
+        `
+    </xmp>
+<h3>8-6/8-7 异步加载</h3>
+    ...
+<h3>8-8 实现加载更多功能</h3>
+    ...
+<h3>8-9 返回顶部功能实现</h3>
+    handleScrollTop(){
+        window.scrollTo(0,0);
+    }
+    bindEvents(){
+        window.addEventListener("scroll",this.props.changeScrollTopShow)
+    }
+    changeScrollTopShow(){
+                console.log(document.documentElement.scrollTop);
+            }
+     componentDidMount(){
+        this.props.handleDidMount();
+        this.bindEvents();
+    }
+    componentWillUnmount(){
+        window.removeEventListener("scroll",this.props.changeScrollTopShow)
+    }
+    render优化
+    const changeHomeData = (state,action) => {
+    return state.merge({
+                topicList:action.topicList,
+                articleList:action.articleList,
+                recommendList:action.recommendList,
+                carouselList:action.carouselList,
+                writterList:action.writterList,
+                totalPage:action.totalPage
+            })
+    }
+    case actionTypes.INIT_LIST:
+            return changeHomeData(state,action)
+<h3>8-10 首页性能优化及路由跳转</h3>
+    一个页面的数据修改,所有页面都重新渲染,需要优化,改哪的数据,哪重新渲染
+    手写shouldComponentUpdate
+    或者把Component换成PureComponent,这样就按需connect
+    由于使用Immutable.js所以可以使用PureComponent,否则可能有问题
+    路由跳转
+    import { Link } from 'react-router-dom'
+    Link key={index} to='/detail'
+    注意使用Link的组件应该在App.js:BrowserRouter里
+<h3>9-1 详情页面布局</h3>
+    ...
+<h3>9-2 使用redux管理详情页面时数据</h3>
+    <xmp>
+        <Content dangerouslySetInnerHTML={{__html: content}}/>
+    </xmp>
+<h3>9-3 异步获取数据</h3>
+    ...
+<h3>9-4 页面路由参数的传递</h3>
+    2种方式
+    <xmp>
+        原文件
+        <Link key={index} to='/detail'>
+         <Route path='/detail' exact component={Detail}></Route>不会匹配 /detail/id
+    </xmp>
+    <xmp>
+        1.动态路由
+        <Link key={index} to={'/detail/' + item.get('id')}>
+        <Route path='/detail/:id' exact component={Detail}></Route>
+        获取传来的id
+        this.props.match.params.id
+    </xmp>   
+    <xmp>
+        2.
+        <Link key={index} to={'/detail?id=' + item.get('id')}>
+        <Route path='/detail' exact component={Detail}></Route>
+        获取传来的id
+        this.props.location.search //获取的值为:"?id=x"//需要处理字符串
+    </xmp>
+<h3>9-5 登录页面布局</h3>
+    ...
+<h3>9-6 登录功能实现</h3>
+    <xmp>
+        <Input placeholder='账号' ref={(input)=>{this.account=input}}/>
+        <Input placeholder='密码' type='password' ref={(input)=>{this.password=input}}/>
+        <Button onClick={()=>this.props.login(this.account,this.password)}>登录</Button>
+            console.log(accountElem.value,passwordElem.value)
+    </xmp>
+    axios.get('/api/login.json?account='+param.account+'&password='+param.password);
+    登录跳转
+    import { Redirect } from 'react-router-dom'
+    <xmp>
+        return <Redirect to='/'/>
+    </xmp>
+<h3>9-7 登录鉴权及代码优化</h3>
+    写文章:只有登录的时候才可以使用
+    创建一个写文章页面
+<h3>9-8 异步组件及withRouter路由方法的使用</h3>
+    network/js查看,所有页面都在首页加载,此时较慢
+    使用第三方模块:react-loadable
+    <xmp>
+        import Loadable from 'react-loadable';
+        import React from 'react'//需要使用JSX语法
+
+        const LoadableComponent = Loadable({
+          loader: () => import('./'),//./index.js
+          loading(){
+            return <div>正在加载</div>//加载页面时替代内容
+          }
+        });
+        export default ()=><LoadableComponent/>
+    </xmp>
+    <xmp>
+        修改App.js的路由
+        import Detail from './pages/detail'
+        改为
+        import Detail from './pages/detail/loadable.js'
+        此时报错:无法获得动态路由的id
+        使用withRouter 修复
+        import { withRouter } from 'react-router-dom'
+        export default connect(mapStateToProps,mapDispatchToProps)(Detail);
+        改为
+        export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Detail));
+    </xmp>
+<h3>10-1 项目上线流程</h3>
+    删除api目录
+    yarn build
+    生成build文件夹
+<h3>10-2 项目升级的说明</h3>
+    生命周期函数部分废弃
+    产生新的内容
+<h3>10-3 课程总结</h3>
+    react基础语法
+    redux数据层框架
+    react-redux方便使用redux
+    react-router 4.0
+    Immutable.js
+    styled-components
+    react-loadable
+</pre>
+</body>
+</html>
